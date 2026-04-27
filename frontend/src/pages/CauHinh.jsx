@@ -235,7 +235,7 @@ export default function CauHinh() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <Row gutter={[16, 16]}>
-        <Col span={14}>
+        <Col xs={24} lg={14}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <Card
               title="Bảng giá vàng hôm nay"
@@ -251,6 +251,7 @@ export default function CauHinh() {
                 rowKey="id"
                 pagination={false}
                 size="small"
+                scroll={{ x: 500 }}
               />
               <Divider />
 
@@ -324,8 +325,8 @@ export default function CauHinh() {
                     </Form.Item>
                   </Col>
                 </Row>
-                <Row gutter={16}>
-                  <Col span={12}>
+                <Row gutter={[16, 0]}>
+                  <Col xs={24} sm={12}>
                     <Form.Item
                       name="nguong_ton_kho"
                       label="Ngưỡng cảnh báo tồn kho (cái)"
@@ -338,7 +339,7 @@ export default function CauHinh() {
                       />
                     </Form.Item>
                   </Col>
-                  <Col span={12}>
+                  <Col xs={24} sm={12}>
                     <Form.Item
                       name="diem_tren_trieu"
                       label="Điểm tích lũy / 100,000đ"
@@ -365,7 +366,7 @@ export default function CauHinh() {
           </div>
         </Col>
 
-        <Col span={10}>
+        <Col xs={24} lg={10}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <Card title="Danh mục sản phẩm" size="small">
               <div

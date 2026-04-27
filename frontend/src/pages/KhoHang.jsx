@@ -218,7 +218,7 @@ export default function KhoHang() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <Row gutter={[16, 16]}>
-        <Col span={6}>
+        <Col xs={12} md={6}>
           <Card>
             <Statistic
               title="Tổng sản phẩm"
@@ -227,7 +227,7 @@ export default function KhoHang() {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} md={6}>
           <Card>
             <Statistic
               title="Giá trị kho (vốn)"
@@ -236,7 +236,7 @@ export default function KhoHang() {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} md={6}>
           <Card
             style={{
               borderLeft: sapHet.length > 0 ? "3px solid #faad14" : undefined,
@@ -254,7 +254,7 @@ export default function KhoHang() {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} md={6}>
           <Card>
             <Statistic
               title="Hàng thu mua"
@@ -266,7 +266,7 @@ export default function KhoHang() {
       </Row>
 
       <Row gutter={[16, 16]}>
-        <Col span={selected ? 16 : 24}>
+        <Col xs={24} lg={selected ? 16 : 24}>
           <Card
             title="Danh sách sản phẩm"
             extra={
@@ -327,6 +327,7 @@ export default function KhoHang() {
               loading={loading}
               size="small"
               pagination={{ pageSize: 10 }}
+              scroll={{ x: 700 }}
               onRow={(r) => ({
                 onClick: () => setSelected(r),
                 style: {
@@ -339,7 +340,7 @@ export default function KhoHang() {
         </Col>
 
         {selected && (
-          <Col span={8}>
+          <Col xs={24} lg={8}>
             <Card
               title="Chi tiết sản phẩm"
               extra={

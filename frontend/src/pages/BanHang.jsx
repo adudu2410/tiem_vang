@@ -229,7 +229,6 @@ export default function BanHang() {
     if (!editData) return;
     setLoadingSua(true);
     try {
-      const tongTienEdit = editData.chiTiet.reduce((s, ct) => s + ct.thanhTien, 0);
       await updateHoaDon(editData.id, {
         khachHangId: editData.khachHangId || null,
         chieuKhauPhanTram: editData.chieuKhauPhanTram || 0,
@@ -408,8 +407,8 @@ export default function BanHang() {
 
   return (
     <>
-      <Row gutter={16}>
-        <Col span={15}>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={15}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <Card title="Thông tin khách hàng" size="small">
               <KhachHangSearch
@@ -449,6 +448,7 @@ export default function BanHang() {
                 dataSource={gioHang} columns={gioHangColumns} rowKey="sanPhamId"
                 pagination={false} size="small"
                 locale={{ emptyText: "Chưa có sản phẩm — click để thêm" }}
+                scroll={{ x: 500 }}
               />
             </Card>
 
@@ -460,7 +460,7 @@ export default function BanHang() {
           </div>
         </Col>
 
-        <Col span={9}>
+        <Col xs={24} lg={9}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16, position: "sticky", top: 0 }}>
             <Card title="Tổng tiền" size="small">
               <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
@@ -529,6 +529,7 @@ export default function BanHang() {
               rowKey="id"
               size="small"
               pagination={{ pageSize: 8 }}
+              scroll={{ x: 600 }}
             />
           </Card>
         </Col>
@@ -539,7 +540,7 @@ export default function BanHang() {
         title={`Sửa hóa đơn — ${editData?.maHd}`}
         open={modalSua}
         onCancel={() => setModalSua(false)}
-        width={720}
+        width="min(720px, 95vw)"
         onOk={luuSuaHoaDon}
         okText="Lưu thay đổi"
         cancelText="Hủy"
@@ -570,8 +571,8 @@ export default function BanHang() {
             </div>
 
             {/* Chiết khấu + HT thanh toán */}
-            <Row gutter={12}>
-              <Col span={8}>
+            <Row gutter={[12, 12]}>
+              <Col xs={24} sm={8}>
                 <Text type="secondary" style={{ fontSize: 12 }}>Chiết khấu (%)</Text>
                 <InputNumber
                   style={{ width: "100%", marginTop: 4 }}
@@ -580,7 +581,7 @@ export default function BanHang() {
                   onChange={(v) => setEditData((p) => ({ ...p, chieuKhauPhanTram: v || 0 }))}
                 />
               </Col>
-              <Col span={8}>
+              <Col xs={24} sm={8}>
                 <Text type="secondary" style={{ fontSize: 12 }}>Hình thức thanh toán</Text>
                 <Select
                   style={{ width: "100%", marginTop: 4 }}
@@ -591,7 +592,7 @@ export default function BanHang() {
                   <Option value="CHUYEN_KHOAN">🏦 Chuyển khoản</Option>
                 </Select>
               </Col>
-              <Col span={8}>
+              <Col xs={24} sm={8}>
                 <Text type="secondary" style={{ fontSize: 12 }}>Ghi chú</Text>
                 <Input
                   style={{ marginTop: 4 }}

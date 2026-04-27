@@ -209,7 +209,7 @@ export default function CamDo() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <Row gutter={[16, 16]}>
-        <Col span={6}>
+        <Col xs={12} md={6}>
           <Card>
             <Statistic
               title="Tổng dư nợ"
@@ -218,7 +218,7 @@ export default function CamDo() {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} md={6}>
           <Card>
             <Statistic
               title="Đang cầm"
@@ -227,7 +227,7 @@ export default function CamDo() {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} md={6}>
           <Card style={{ borderLeft: "3px solid #faad14" }}>
             <Statistic
               title="Sắp đáo hạn"
@@ -236,7 +236,7 @@ export default function CamDo() {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} md={6}>
           <Card style={{ borderLeft: "3px solid #ff4d4f" }}>
             <Statistic
               title="Quá hạn"
@@ -247,8 +247,8 @@ export default function CamDo() {
         </Col>
       </Row>
 
-      <Row gutter={16}>
-        <Col span={selected ? 15 : 24}>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={selected ? 15 : 24}>
           <Card
             title="Danh sách hợp đồng"
             extra={
@@ -296,6 +296,7 @@ export default function CamDo() {
               loading={loading}
               size="small"
               pagination={{ pageSize: 8 }}
+              scroll={{ x: 600 }}
               onRow={(r) => ({
                 onClick: () => setSelected(r === selected ? null : r),
                 style: {
@@ -308,7 +309,7 @@ export default function CamDo() {
         </Col>
 
         {selected && (
-          <Col span={9}>
+          <Col xs={24} lg={9}>
             <Card
               title="Chi tiết hợp đồng"
               extra={

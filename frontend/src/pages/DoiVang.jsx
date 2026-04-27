@@ -110,8 +110,8 @@ export default function DoiVang() {
   };
 
   return (
-    <Row gutter={16}>
-      <Col span={14}>
+    <Row gutter={[16, 16]}>
+      <Col xs={24} lg={14}>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <Card title="Thông tin khách hàng" size="small">
             <KhachHangSearch
@@ -252,7 +252,7 @@ export default function DoiVang() {
         </div>
       </Col>
 
-      <Col span={10}>
+      <Col xs={24} lg={10}>
         <div
           style={{
             display: "flex",

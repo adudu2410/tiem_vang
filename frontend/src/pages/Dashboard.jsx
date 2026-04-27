@@ -12,7 +12,6 @@ import {
 } from "antd";
 import {
   ArrowUpOutlined,
-  ArrowDownOutlined,
   GoldOutlined,
   ShoppingOutlined,
   LockOutlined,
@@ -37,7 +36,7 @@ import { getHoaDon } from "../api/hoaDon";
 import { getDichVu } from "../api/dichVu";
 import dayjs from "dayjs";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const formatMoney = (v) =>
   new Intl.NumberFormat("vi-VN").format(Math.round(v || 0));
@@ -255,7 +254,7 @@ export default function Dashboard() {
       )}
 
       <Row gutter={[16, 16]}>
-        <Col span={6}>
+        <Col xs={12} md={6}>
           <Card>
             <Statistic
               title="Doanh thu hôm nay"
@@ -265,7 +264,7 @@ export default function Dashboard() {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} md={6}>
           <Card>
             <Statistic
               title="Tiền trong két (Hệ thống)"
@@ -275,7 +274,7 @@ export default function Dashboard() {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} md={6}>
           <Card style={{ borderLeft: "3px solid #faad14" }}>
             <Statistic
               title="Dư nợ cầm đồ"
@@ -293,7 +292,7 @@ export default function Dashboard() {
             </Text>
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} md={6}>
           <Card>
             <Statistic
               title="Hàng tồn kho"
@@ -311,7 +310,7 @@ export default function Dashboard() {
       </Row>
 
       <Row gutter={[16, 16]}>
-        <Col span={16}>
+        <Col xs={24} md={16}>
           <Card title="Doanh thu & Chi phí 7 ngày qua">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={barData}>
@@ -335,7 +334,7 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </Card>
         </Col>
-        <Col span={8}>
+        <Col xs={24} md={8}>
           <Card title="Cơ cấu doanh thu">
             {donutData.length > 0 ? (
               <ResponsiveContainer width="100%" height={220}>
@@ -376,7 +375,7 @@ export default function Dashboard() {
       </Row>
 
       <Row gutter={[16, 16]}>
-        <Col span={12}>
+        <Col xs={24} md={12}>
           <Card
             title={
               <>
@@ -393,10 +392,11 @@ export default function Dashboard() {
               pagination={false}
               size="small"
               loading={loading}
+              scroll={{ x: 400 }}
             />
           </Card>
         </Col>
-        <Col span={12}>
+        <Col xs={24} md={12}>
           <Card title="Giao dịch hôm nay" size="small">
             <Table
               dataSource={giaoDichHomNay.slice(0, 6)}
@@ -405,6 +405,7 @@ export default function Dashboard() {
               pagination={false}
               size="small"
               loading={loading}
+              scroll={{ x: 400 }}
             />
           </Card>
         </Col>

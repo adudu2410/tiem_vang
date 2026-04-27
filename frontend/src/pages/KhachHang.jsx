@@ -210,8 +210,8 @@ export default function KhachHang() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <Row gutter={16}>
-        <Col span={selected ? 14 : 24}>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={selected ? 14 : 24}>
           <Card
             title={`Khách hàng (${list.length})`}
             extra={
@@ -237,6 +237,7 @@ export default function KhachHang() {
               loading={loading}
               size="small"
               pagination={{ pageSize: 10 }}
+              scroll={{ x: 500 }}
               onRow={(r) => ({
                 onClick: () => chonKhach(r),
                 style: {
@@ -249,7 +250,7 @@ export default function KhachHang() {
         </Col>
 
         {selected && (
-          <Col span={10}>
+          <Col xs={24} lg={10}>
             <Card
               title="Hồ sơ khách hàng"
               extra={

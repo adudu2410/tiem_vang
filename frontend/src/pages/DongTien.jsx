@@ -303,7 +303,7 @@ export default function DongTien() {
       {/* ===== THỐNG KÊ ===== */}
       <Row gutter={[16, 16]}>
         {/* Tiền mặt */}
-        <Col span={6}>
+        <Col xs={24} sm={12} md={6}>
           <Card style={{ borderLeft: "3px solid #EF9F27" }}>
             <Statistic
               title="Tiền mặt (hệ thống)"
@@ -343,7 +343,7 @@ export default function DongTien() {
         </Col>
 
         {/* Chuyển khoản */}
-        <Col span={6}>
+        <Col xs={24} sm={12} md={6}>
           <Card style={{ borderLeft: "3px solid #1677ff" }}>
             <Statistic
               title="Chuyển khoản"
@@ -358,7 +358,7 @@ export default function DongTien() {
         </Col>
 
         {/* Thu / Chi tháng */}
-        <Col span={6}>
+        <Col xs={24} sm={12} md={6}>
           <Card>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
               <div>
@@ -383,7 +383,7 @@ export default function DongTien() {
         </Col>
 
         {/* Lợi nhuận */}
-        <Col span={6}>
+        <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
               title="Lợi nhuận ròng"
@@ -396,8 +396,8 @@ export default function DongTien() {
       </Row>
 
       {/* ===== NỘI DUNG CHÍNH ===== */}
-      <Row gutter={16}>
-        <Col span={16}>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} md={16}>
           <Card
             title="Nhật ký giao dịch"
             extra={
@@ -430,11 +430,12 @@ export default function DongTien() {
               loading={loading}
               size="small"
               pagination={{ pageSize: 10 }}
+              scroll={{ x: 600 }}
             />
           </Card>
         </Col>
 
-        <Col span={8}>
+        <Col xs={24} md={8}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <Card title="Nhập chi phí vận hành" size="small">
               <Form form={form} layout="vertical">
@@ -543,7 +544,7 @@ export default function DongTien() {
         }
         open={modalKiemQuy}
         onCancel={() => setModalKiemQuy(false)}
-        width={560}
+        width="min(560px, 95vw)"
         footer={null}
       >
         {/* Bảng đếm từng mệnh giá */}

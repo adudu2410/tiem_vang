@@ -16,7 +16,6 @@ import {
   DatePicker,
   Popconfirm,
   Tabs,
-  Divider,
 } from "antd";
 import { PlusOutlined, CheckOutlined, SendOutlined } from "@ant-design/icons";
 import {
@@ -291,9 +290,9 @@ export default function DichVu() {
   ];
 
   return (
-    <Row gutter={16}>
+    <Row gutter={[16, 16]}>
       {/* ===== FORM TẠO PHIẾU ===== */}
-      <Col span={9}>
+      <Col xs={24} lg={9}>
         <Card title="Tạo phiếu dịch vụ" style={{ position: "sticky", top: 0 }}>
           {/* Khách hàng */}
           <div style={{ marginBottom: 12 }}>
@@ -418,7 +417,7 @@ export default function DichVu() {
       </Col>
 
       {/* ===== DANH SÁCH PHIẾU ===== */}
-      <Col span={15}>
+      <Col xs={24} lg={15}>
         <Card title="Danh sách phiếu dịch vụ">
           <Tabs
             activeKey={tabActive}
@@ -467,6 +466,7 @@ export default function DichVu() {
             loading={loading}
             size="small"
             pagination={{ pageSize: 8 }}
+            scroll={{ x: 600 }}
           />
         </Card>
       </Col>

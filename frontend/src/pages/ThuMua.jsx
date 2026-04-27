@@ -240,7 +240,7 @@ export default function ThuMua() {
   return (
     <Row gutter={[16, 16]}>
       {/* ===== CỘT TRÁI ===== */}
-      <Col span={15}>
+      <Col xs={24} lg={15}>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {/* Khách hàng */}
           <Card title="Khách hàng" size="small">
@@ -271,6 +271,7 @@ export default function ThuMua() {
                 rowKey="_id"
                 pagination={false}
                 size="small"
+                scroll={{ x: 500 }}
                 style={{ marginBottom: 12 }}
                 summary={() => (
                   <Table.Summary.Row>
@@ -307,8 +308,8 @@ export default function ThuMua() {
               >
                 Thêm món hàng
               </Text>
-              <Row gutter={8} align="middle">
-                <Col span={6}>
+              <Row gutter={[8, 8]} align="middle">
+                <Col xs={24} sm={6}>
                   <Select
                     placeholder="Loại vàng"
                     style={{ width: "100%" }}
@@ -323,7 +324,7 @@ export default function ThuMua() {
                     ))}
                   </Select>
                 </Col>
-                <Col span={7}>
+                <Col xs={24} sm={7}>
                   <Input
                     placeholder="Mô tả (tùy chọn)"
                     value={newItem.moTa}
@@ -333,7 +334,7 @@ export default function ThuMua() {
                     size="small"
                   />
                 </Col>
-                <Col span={4}>
+                <Col xs={12} sm={4}>
                   <InputNumber
                     placeholder="Trọng lượng (chỉ)"
                     style={{ width: "100%" }}
@@ -346,7 +347,7 @@ export default function ThuMua() {
                     size="small"
                   />
                 </Col>
-                <Col span={5}>
+                <Col xs={9} sm={5}>
                   <InputNumber
                     placeholder="Giá thu vào (đ/chỉ)"
                     style={{ width: "100%" }}
@@ -362,7 +363,7 @@ export default function ThuMua() {
                     size="small"
                   />
                 </Col>
-                <Col span={2}>
+                <Col xs={3} sm={2}>
                   <Button
                     type="primary"
                     icon={<PlusOutlined />}
@@ -396,7 +397,7 @@ export default function ThuMua() {
       </Col>
 
       {/* ===== CỘT PHẢI ===== */}
-      <Col span={9}>
+      <Col xs={24} lg={9}>
         <div
           style={{
             display: "flex",
@@ -504,6 +505,7 @@ export default function ThuMua() {
             rowKey="id"
             size="small"
             pagination={{ pageSize: 8 }}
+            scroll={{ x: 600 }}
           />
         </Card>
       </Col>
