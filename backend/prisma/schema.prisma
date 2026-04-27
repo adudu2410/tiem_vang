@@ -1,0 +1,349 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model KhachHang {
+  id           Int            @id @default(autoincrement())
+  hoTen        String
+  sdt          String         @unique
+  cccd         String?        @unique
+  ngaySinh     DateTime?
+  diaChi       String?
+  tongDiem     Int            @default(0)
+  taoLuc       DateTime       @default(now())
+  hoaDonBan    HoaDonBan[]
+  hopDongCamDo  HopDongCamDo[]
+  phieuDichVu   PhieuDichVu[]
+  phieuDoiVang  PhieuDoiVang[]
+  phieuThuMua   PhieuThuMua[]
+
+  @@map("khach_hang")
+}
+
+model LoaiVang {
+  id           Int            @id @default(autoincrement())
+  ten          String
+  kyHieu       String         @unique
+  giaMuaVao    Float
+  giaBanRa     Float
+  capNhatLuc   DateTime       @default(now()) @updatedAt
+  chiTietThuMua ChiTietThuMua[]
+  hopDongCamDo  HopDongCamDo[]
+  phieuDoiVang  PhieuDoiVang[]
+  sanPham       SanPham[]
+
+  @@map("loai_vang")
+}
+
+model CauHinhHeThong {
+  id         Int      @id @default(autoincrement())
+  tenCauHinh String   @unique
+  giaTri     String
+  moTa       String?
+  capNhatLuc DateTime @default(now()) @updatedAt
+
+  @@map("cau_hinh_he_thong")
+}
+
+model DanhMuc {
+  id      Int       @id @default(autoincrement())
+  ten     String    @unique
+  moTa    String?
+  sanPham SanPham[]
+
+  @@map("danh_muc")
+}
+
+model SanPham {
+  id              Int             @id @default(autoincrement())
+  maSp            String          @unique
+  ten             String
+  danhMucId       Int
+  loaiVangId      Int
+  trongLuongChi   Float
+  trongLuongGram  Float
+  soLuongTon      Int             @default(0)
+  soLuongToiThieu Int             @default(1)
+  giaVon          Float
+  giaBan          Float
+  tienCongMacDinh Float           @default(0)
+  nguonGoc        NguonGoc        @default(NHAP_MOI)
+  hinhAnh         String?
+  taoLuc          DateTime        @default(now())
+  chiTietHoaDon   ChiTietHoaDon[]
+  phieuDoiVang    PhieuDoiVang[]
+  danhMuc         DanhMuc         @relation(fields: [danhMucId], references: [id])
+  loaiVang        LoaiVang        @relation(fields: [loaiVangId], references: [id])
+
+  @@map("san_pham")
+}
+
+model HoaDonBan {
+  id                Int             @id @default(autoincrement())
+  maHd              String          @unique
+  khachHangId       Int?
+  tongTien          Float
+  chieuKhauPhanTram Float           @default(0)
+  tongSauChieuKhau  Float
+  hinhThucThanhToan HinhThucTT
+  trangThai         TrangThaiHD     @default(HOAN_TAT)
+  ghiChu            String?
+  taoLuc            DateTime        @default(now())
+  chiTietHoaDon     ChiTietHoaDon[]
+  giaodichKet       GiaoDichKet[]
+  khachHang         KhachHang?      @relation(fields: [khachHangId], references: [id])
+
+  @@map("hoa_don_ban")
+}
+
+model ChiTietHoaDon {
+  id            Int       @id @default(autoincrement())
+  hoaDonId      Int
+  sanPhamId     Int
+  soLuong       Int
+  giaVangApDung Float
+  tienCong      Float
+  donGia        Float
+  thanhTien     Float
+  hoaDon        HoaDonBan @relation(fields: [hoaDonId], references: [id])
+  sanPham       SanPham   @relation(fields: [sanPhamId], references: [id])
+
+  @@map("chi_tiet_hoa_don")
+}
+
+model PhieuThuMua {
+  id                Int               @id @default(autoincrement())
+  maPhieu           String            @unique
+  khachHangId       Int?
+  tongTienTraKhach  Float
+  hinhThucThanhToan HinhThucTT        @default(TIEN_MAT)
+  ghiChu            String?
+  taoLuc            DateTime          @default(now())
+  chiTiet           ChiTietThuMua[]
+  giaoichKet        GiaoDichKet[]
+  khachHang         KhachHang?        @relation(fields: [khachHangId], references: [id])
+
+  @@map("phieu_thu_mua")
+}
+
+model ChiTietThuMua {
+  id            Int         @id @default(autoincrement())
+  phieuThuMuaId Int
+  loaiVangId    Int
+  moTa          String?
+  trongLuong    Float
+  giaThuVao     Float
+  thanhTien     Float
+  phieuThuMua   PhieuThuMua @relation(fields: [phieuThuMuaId], references: [id])
+  loaiVang      LoaiVang    @relation(fields: [loaiVangId], references: [id])
+
+  @@map("chi_tiet_thu_mua")
+}
+
+model PhieuDoiVang {
+  id                Int           @id @default(autoincrement())
+  maPhieu           String        @unique
+  khachHangId       Int?
+  loaiVangCuId      Int
+  trongLuongCuGram  Float
+  giaVangCuApDung   Float
+  giaTriVangCu      Float
+  sanPhamMoiId      Int
+  giaVangMoiApDung  Float
+  tienCongHangMoi   Float
+  giaSanPhamMoi     Float
+  chenhLech         Float
+  hinhThucThanhToan HinhThucTT
+  hinhAnhVangCu     String?
+  ghiChu            String?
+  taoLuc            DateTime      @default(now())
+  giaoichKet        GiaoDichKet[]
+  khachHang         KhachHang?    @relation(fields: [khachHangId], references: [id])
+  loaiVangCu        LoaiVang      @relation(fields: [loaiVangCuId], references: [id])
+  sanPhamMoi        SanPham       @relation(fields: [sanPhamMoiId], references: [id])
+
+  @@map("phieu_doi_vang")
+}
+
+model HopDongCamDo {
+  id             Int              @id @default(autoincrement())
+  maHopDong      String           @unique
+  khachHangId    Int
+  loaiVangId     Int
+  moTaTaiSan     String
+  trongLuongGram Float
+  giaTriThamDinh Float
+  soTienChoVay   Float
+  laiSuatNgay    Float
+  ngayVay        DateTime
+  ngayDaoHan     DateTime
+  trangThai      TrangThaiCD      @default(DANG_CAM)
+  hinhAnhTaiSan  String?
+  ghiChu         String?
+  taoLuc         DateTime         @default(now())
+  giaoichKet     GiaoDichKet[]
+  khachHang      KhachHang        @relation(fields: [khachHangId], references: [id])
+  loaiVang       LoaiVang         @relation(fields: [loaiVangId], references: [id])
+  thanhToanCamDo ThanhToanCamDo[]
+
+  @@map("hop_dong_cam_do")
+}
+
+model ThanhToanCamDo {
+  id            Int          @id @default(autoincrement())
+  hopDongId     Int
+  loaiThanhToan LoaiTTCD
+  ngayThanhToan DateTime
+  soNgayThucTe  Int
+  tienGoc       Float
+  tienLai       Float
+  tongTien      Float
+  ngayDaoHanMoi DateTime?
+  ghiChu        String?
+  hopDong       HopDongCamDo @relation(fields: [hopDongId], references: [id])
+
+  @@map("thanh_toan_cam_do")
+}
+
+model PhieuDichVu {
+  id                Int           @id @default(autoincrement())
+  maPhieu           String        @unique
+  khachHangId       Int?
+  tenKhach          String?
+  sdtKhach          String?
+  loaiDichVu        String
+  moTaTaiSan        String
+  moTaCongViec      String?
+  giaTien           Float
+  hinhThucThanhToan HinhThucTT    @default(TIEN_MAT)
+  trangThai         TrangThaiDV   @default(TIEP_NHAN)
+  ngayHenTra        DateTime?
+  ghiChu            String?
+  taoLuc            DateTime      @default(now())
+  khachHang         KhachHang?    @relation(fields: [khachHangId], references: [id])
+  giaoDichKet       GiaoDichKet[]
+
+  @@map("phieu_dich_vu")
+}
+
+model KiemQuy {
+  id             Int      @id @default(autoincrement())
+  ngayKiem       DateTime @default(now())
+  soDuHeThong    Float
+  tienMenhGia    Float    @default(0)
+  tienDongTep    Float    @default(0)
+  tongTienDem    Float
+  chenhLech      Float
+  chiTietMenhGia Json
+  ghiChu         String?
+
+  @@map("kiem_quy")
+}
+
+model DanhMucChiPhi {
+  id            Int             @id @default(autoincrement())
+  ten           String          @unique
+  moTa          String?
+  chiPhiVanHanh ChiPhiVanHanh[]
+
+  @@map("danh_muc_chi_phi")
+}
+
+model ChiPhiVanHanh {
+  id         Int           @id @default(autoincrement())
+  tenChiPhi  String
+  danhMucId  Int
+  soTien     Float
+  ngayChi    DateTime
+  ghiChu     String?
+  taoLuc     DateTime      @default(now())
+  danhMuc    DanhMucChiPhi @relation(fields: [danhMucId], references: [id])
+  giaoichKet GiaoDichKet[]
+
+  @@map("chi_phi_van_hanh")
+}
+
+model GiaoDichKet {
+  id                Int            @id @default(autoincrement())
+  loaiGiaoDich      LoaiGD
+  nguonGocType      NguonGocType
+  hinhThucThanhToan HinhThucTT     @default(TIEN_MAT)
+  hoaDonId          Int?
+  phieuThuMuaId     Int?
+  phieuDoiVangId    Int?
+  hopDongId         Int?
+  chiPhiId          Int?
+  phieuDichVuId     Int?
+  soTien            Float
+  soduSau           Float
+  ghiChu            String?
+  taoLuc            DateTime       @default(now())
+  chiPhi         ChiPhiVanHanh? @relation(fields: [chiPhiId], references: [id])
+  hoaDon         HoaDonBan?     @relation(fields: [hoaDonId], references: [id])
+  hopDong        HopDongCamDo?  @relation(fields: [hopDongId], references: [id])
+  phieuDichVu    PhieuDichVu?   @relation(fields: [phieuDichVuId], references: [id])
+  phieuDoiVang   PhieuDoiVang?  @relation(fields: [phieuDoiVangId], references: [id])
+  phieuThuMua    PhieuThuMua?   @relation(fields: [phieuThuMuaId], references: [id])
+
+  @@map("giao_dich_ket")
+}
+
+enum NguonGoc {
+  NHAP_MOI
+  THU_MUA
+}
+
+enum HinhThucTT {
+  TIEN_MAT
+  CHUYEN_KHOAN
+}
+
+enum TrangThaiHD {
+  NHAP
+  HOAN_TAT
+  DA_HUY
+}
+
+enum TrangThaiCD {
+  DANG_CAM
+  SAP_DAO_HAN
+  QUA_HAN
+  DA_CHUOC
+  DA_THANH_LY
+}
+
+enum LoaiTTCD {
+  CHUOC_DO
+  GIA_HAN
+  TRA_LAI
+  THANH_LY
+}
+
+enum LoaiGD {
+  THU
+  CHI
+}
+
+enum TrangThaiDV {
+  TIEP_NHAN
+  DANG_LAM
+  HOAN_THANH
+  DA_GIAO
+  DA_HUY
+}
+
+enum NguonGocType {
+  BAN_HANG
+  THU_MUA
+  DOI_VANG
+  CAM_DO_GIAI_NGAN
+  CAM_DO_CHUOC
+  CAM_DO_LAI
+  CHI_PHI
+  DICH_VU
+  DIEU_CHINH
+}
