@@ -14,10 +14,12 @@ import {
   Modal,
   Form,
 } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { PlusOutlined, DeleteOutlined, PrinterOutlined } from "@ant-design/icons";
 import { createThuMua, getThuMua } from "../api/thuMua";
 import { createKhachHang } from "../api/khachHang";
 import KhachHangSearch from "../components/KhachHangSearch";
+import ThanhToanSection from "../components/ThanhToanSection";
+import { printPhieuThuMua } from "../utils/print";
 import { getLoaiVang } from "../api/cauHinh";
 import dayjs from "dayjs";
 
@@ -34,6 +36,7 @@ export default function ThuMua() {
   const [loading, setLoading] = useState(false);
   const [modalKH, setModalKH] = useState(false);
   const [hinhThucTT, setHinhThucTT] = useState("TIEN_MAT");
+  const [soTienCK, setSoTienCK] = useState(0);
   const [ghiChuPhieu, setGhiChuPhieu] = useState("");
   const [formKH] = Form.useForm();
 
@@ -112,10 +115,10 @@ export default function ThuMua() {
       return message.warning("Chưa có món hàng nào trong phiếu");
     setLoading(true);
     try {
-      await createThuMua({
+      const res = await createThuMua({
         khachHangId: khachHang?.id || null,
         ghiChu: ghiChuPhieu || null,
-        hinhThucThanhToan: hinhThucTT,
+        hinhThucThanhToan: hinhThucTT === "KET_HOP" ? "CHUYEN_KHOAN" : hinhThucTT,
         items: items.map(({ loaiVangId, moTa, trongLuong, giaThuVao, thanhTien }) => ({
           loaiVangId,
           moTa,
@@ -125,9 +128,28 @@ export default function ThuMua() {
         })),
       });
       message.success("Tạo phiếu thu mua thành công!");
+      const maPhieu = Array.isArray(res.data) ? res.data[0]?.maPhieu : res.data?.maPhieu;
+      printPhieuThuMua({
+        maPhieu: maPhieu || "PTM",
+        khachHang,
+        items: items.map((i) => ({
+          tenLoaiVang: loaiVang.find((l) => l.id === i.loaiVangId)?.ten || "",
+          moTa: i.moTa,
+          trongLuong: i.trongLuong,
+          giaThuVao: i.giaThuVao,
+          thanhTien: i.thanhTien,
+        })),
+        tongTien,
+        hinhThuc: hinhThucTT,
+        soTienCK,
+        ghiChu: ghiChuPhieu,
+        ngay: new Date().toISOString(),
+      });
       setItems([]);
       setKhachHang(null);
       setGhiChuPhieu("");
+      setHinhThucTT("TIEN_MAT");
+      setSoTienCK(0);
       const ls = await getThuMua();
       setLichSu(ls.data);
     } catch (e) {
@@ -234,6 +256,37 @@ export default function ThuMua() {
       dataIndex: "taoLuc",
       render: (v) => dayjs(v).format("DD/MM/YYYY HH:mm"),
       width: 130,
+    },
+    {
+      title: "",
+      key: "in",
+      width: 55,
+      render: (_, r) => (
+        <Button
+          size="small"
+          icon={<PrinterOutlined />}
+          onClick={() =>
+            printPhieuThuMua({
+              maPhieu: r.maPhieu,
+              khachHang: r.khachHang,
+              items: (r.chiTiet || []).map((ct) => ({
+                tenLoaiVang: ct.loaiVang?.ten || ct.loaiVang?.kyHieu || "",
+                moTa: ct.moTa,
+                trongLuong: ct.trongLuong,
+                giaThuVao: ct.giaThuVao,
+                thanhTien: ct.thanhTien,
+              })),
+              tongTien: r.tongTienTraKhach,
+              hinhThuc: "TIEN_MAT",
+              soTienCK: 0,
+              ghiChu: r.ghiChu,
+              ngay: r.taoLuc,
+            })
+          }
+        >
+          In
+        </Button>
+      ),
     },
   ];
 
@@ -459,17 +512,13 @@ export default function ThuMua() {
             </div>
           </Card>
 
-          {/* Thanh toán */}
-          <Card title="Hình thức thanh toán" size="small">
-            <Select
-              value={hinhThucTT}
-              onChange={setHinhThucTT}
-              style={{ width: "100%" }}
-            >
-              <Option value="TIEN_MAT">Tiền mặt</Option>
-              <Option value="CHUYEN_KHOAN">Chuyển khoản</Option>
-            </Select>
-          </Card>
+          <ThanhToanSection
+            hinhThuc={hinhThucTT}
+            onHinhThuc={setHinhThucTT}
+            soTienCK={soTienCK}
+            onSoTienCK={setSoTienCK}
+            tongTien={tongTien}
+          />
 
           {/* Nút hành động */}
           <div style={{ display: "flex", gap: 8 }}>
@@ -479,6 +528,8 @@ export default function ThuMua() {
                 setItems([]);
                 setKhachHang(null);
                 setGhiChuPhieu("");
+                setHinhThucTT("TIEN_MAT");
+                setSoTienCK(0);
               }}
             >
               Hủy phiếu

@@ -18,6 +18,8 @@ import { SwapOutlined } from "@ant-design/icons";
 import { createDoiVang, getDoiVang } from "../api/doiVang";
 import { createKhachHang } from "../api/khachHang";
 import KhachHangSearch from "../components/KhachHangSearch";
+import ThanhToanSection, { buildThanhToanPayload } from "../components/ThanhToanSection";
+import { printPhieuDoiVang } from "../utils/print";
 import { getLoaiVang } from "../api/cauHinh";
 import { getSanPham } from "../api/sanPham";
 import dayjs from "dayjs";
@@ -34,6 +36,8 @@ export default function DoiVang() {
   const [spChon, setSpChon] = useState(null);
   const [loading, setLoading] = useState(false);
   const [modalKH, setModalKH] = useState(false);
+  const [hinhThuc, setHinhThuc] = useState("TIEN_MAT");
+  const [soTienCK, setSoTienCK] = useState(0);
   const [formKH] = Form.useForm();
   const [form] = Form.useForm();
 
@@ -90,18 +94,51 @@ export default function DoiVang() {
     try {
       const values = await form.validateFields();
       setLoading(true);
-      await createDoiVang({
+      const payload = buildThanhToanPayload({
+        hinhThuc,
+        soTienCK,
+        tongTien: Math.abs(chenhLech),
+        ghiChu: values.ghiChu || "",
+      });
+      const res = await createDoiVang({
         ...values,
         khachHangId: khachHang?.id || null,
         giaVangCuApDung,
         giaTriVangCu,
         chenhLech,
-        hinhThucThanhToan: "TIEN_MAT",
+        hinhThucThanhToan: payload.hinhThucThanhToan,
+        ghiChu: payload.ghiChu,
       });
       message.success("Tạo phiếu đổi vàng thành công!");
+      const loaiVangCuData = loaiVang.find((l) => l.id === loaiVangCuId);
+      printPhieuDoiVang({
+        maPhieu: res.data?.maPhieu || "PDV",
+        khachHang,
+        vangCu: [
+          ["Loại vàng", loaiVangCuData?.ten || ""],
+          ["Trọng lượng", `${trongLuongCuGram}g`],
+          ["Giá mua vào", `${formatMoney(giaVangCuApDung)} đ/chỉ`],
+          ["Tỷ lệ thu mua", `${tyLeThuMua}%`],
+          ["Giá trị vàng cũ", `${formatMoney(giaTriVangCu)} đ`],
+        ],
+        vangMoi: [
+          ["Sản phẩm", spChon?.ten || ""],
+          ["Trọng lượng", spChon ? `${spChon.trongLuongGram}g` : ""],
+          ["Giá vàng", `${formatMoney(giaVangMoiApDung)} đ/chỉ`],
+          ["Tiền công", `${formatMoney(tienCongHangMoi)} đ`],
+          ["Tổng SP mới", `${formatMoney(giaSanPhamMoi + tienCongHangMoi)} đ`],
+        ],
+        chenhLech,
+        hinhThuc,
+        soTienCK,
+        ghiChu: payload.ghiChu,
+        ngay: new Date().toISOString(),
+      });
       form.resetFields();
       setKhachHang(null);
       setSpChon(null);
+      setHinhThuc("TIEN_MAT");
+      setSoTienCK(0);
     } catch (e) {
       message.error(e.response?.data?.error || "Lỗi tạo phiếu");
     } finally {
@@ -367,6 +404,14 @@ export default function DoiVang() {
             </div>
           </Card>
 
+          <ThanhToanSection
+            hinhThuc={hinhThuc}
+            onHinhThuc={setHinhThuc}
+            soTienCK={soTienCK}
+            onSoTienCK={setSoTienCK}
+            tongTien={Math.abs(chenhLech)}
+          />
+
           <div style={{ display: "flex", gap: 8 }}>
             <Button
               style={{ flex: 1 }}
@@ -374,6 +419,8 @@ export default function DoiVang() {
                 form.resetFields();
                 setKhachHang(null);
                 setSpChon(null);
+                setHinhThuc("TIEN_MAT");
+                setSoTienCK(0);
               }}
             >
               Hủy

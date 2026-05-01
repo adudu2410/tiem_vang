@@ -22,6 +22,8 @@ import { PlusOutlined } from "@ant-design/icons";
 import { getCamDo, createCamDo, chuocDo, giaHan } from "../api/camDo";
 import { createKhachHang } from "../api/khachHang";
 import KhachHangSearch from "../components/KhachHangSearch";
+import ThanhToanSection, { buildThanhToanPayload } from "../components/ThanhToanSection";
+import { printHopDongCamDo, printPhieuChuoc } from "../utils/print";
 import { getLoaiVang } from "../api/cauHinh";
 import dayjs from "dayjs";
 
@@ -50,6 +52,7 @@ export default function CamDo() {
   const [modalGiaHan, setModalGiaHan] = useState(false);
   const [modalKH, setModalKH] = useState(false);
   const [htttChuoc, setHtttChuoc] = useState("TIEN_MAT");
+  const [soTienCKChuoc, setSoTienCKChuoc] = useState(0);
   const [formTao] = Form.useForm();
   const [formGiaHan] = Form.useForm();
   const [formKH] = Form.useForm();
@@ -91,13 +94,27 @@ export default function CamDo() {
     if (!khachHang) return message.warning("Chưa chọn khách hàng!");
     try {
       const values = await formTao.validateFields();
-      await createCamDo({
+      const res = await createCamDo({
         ...values,
         khachHangId: khachHang.id,
         ngayVay: values.ngayVay.toISOString(),
         ngayDaoHan: values.ngayDaoHan.toISOString(),
       });
       message.success("Tạo hợp đồng thành công!");
+      const hd = res.data;
+      printHopDongCamDo({
+        maHopDong: hd?.maHopDong || "HĐ",
+        khachHang,
+        loaiVang: loaiVang.find((l) => l.id === values.loaiVangId)?.ten || "",
+        moTa: values.moTaTaiSan,
+        trongLuong: values.trongLuongGram,
+        giaTriThamDinh: values.giaTriThamDinh,
+        soTienChoVay: values.soTienChoVay,
+        laiSuatNgay: hd?.laiSuatNgay ?? (values.soTienChoVay >= 10000000 ? 1500 : 2000),
+        ngayVay: values.ngayVay.toISOString(),
+        ngayDaoHan: values.ngayDaoHan.toISOString(),
+        ghiChu: values.ghiChu,
+      });
       setModalTao(false);
       formTao.resetFields();
       setKhachHang(null);
@@ -109,12 +126,25 @@ export default function CamDo() {
 
   const handleChuoc = async (id) => {
     try {
-      const res = await chuocDo(id, { hinhThucThanhToan: htttChuoc });
-      message.success(
-        `Chuộc thành công! Tổng thu: ${formatMoney(res.data.tongTien)} đ`,
-      );
+      const tongCan = (selected?.soTienChoVay || 0) + (selected?.laiPhatSinh || 0);
+      const payload = buildThanhToanPayload({ hinhThuc: htttChuoc, soTienCK: soTienCKChuoc, tongTien: tongCan });
+      const res = await chuocDo(id, { hinhThucThanhToan: payload.hinhThucThanhToan });
+      message.success(`Chuộc thành công! Tổng thu: ${formatMoney(res.data.tongTien)} đ`);
+      printPhieuChuoc({
+        maHopDong: selected.maHopDong,
+        khachHang: selected.khachHang,
+        soTienGoc: selected.soTienChoVay,
+        soNgay: selected.soNgayThucTe,
+        tienLai: selected.laiPhatSinh || 0,
+        tongTien: tongCan,
+        hinhThuc: htttChuoc,
+        soTienCK: soTienCKChuoc,
+        ngay: new Date().toISOString(),
+      });
       fetchData();
       setSelected(null);
+      setSoTienCKChuoc(0);
+      setHtttChuoc("TIEN_MAT");
     } catch (e) {
       message.error(e.response?.data?.error || "Lỗi");
     }
@@ -435,15 +465,14 @@ export default function CamDo() {
                 <div
                   style={{ display: "flex", flexDirection: "column", gap: 8 }}
                 >
-                  <Select
-                    value={htttChuoc}
-                    onChange={setHtttChuoc}
-                    style={{ width: "100%" }}
-                    size="small"
-                  >
-                    <Option value="TIEN_MAT">💵 Tiền mặt</Option>
-                    <Option value="CHUYEN_KHOAN">🏦 Chuyển khoản</Option>
-                  </Select>
+                  <ThanhToanSection
+                    hinhThuc={htttChuoc}
+                    onHinhThuc={setHtttChuoc}
+                    soTienCK={soTienCKChuoc}
+                    onSoTienCK={setSoTienCKChuoc}
+                    tongTien={(selected?.soTienChoVay || 0) + (selected?.laiPhatSinh || 0)}
+                    title="Hình thức thanh toán"
+                  />
                   <Button
                     type="primary"
                     style={{ background: "#52c41a", borderColor: "#52c41a" }}

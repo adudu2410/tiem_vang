@@ -10,7 +10,6 @@ import doiVangRoutes from "./routes/doiVang.js";
 import camDoRoutes from "./routes/camDo.js";
 import dongTienRoutes from "./routes/dongTien.js";
 import cauHinhRoutes from "./routes/cauHinh.js";
-import dichVuRoutes from "./routes/dichVu.js";
 
 dotenv.config();
 
@@ -32,7 +31,6 @@ app.use("/api/doi-vang", doiVangRoutes);
 app.use("/api/cam-do", camDoRoutes);
 app.use("/api/dong-tien", dongTienRoutes);
 app.use("/api/cau-hinh", cauHinhRoutes);
-app.use("/api/dich-vu", dichVuRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

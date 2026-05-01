@@ -19,10 +19,13 @@ import {
 import {
   DeleteOutlined,
   EditOutlined,
+  PrinterOutlined,
 } from "@ant-design/icons";
 import { getSanPham } from "../api/sanPham";
 import { createKhachHang } from "../api/khachHang";
 import KhachHangSearch from "../components/KhachHangSearch";
+import ThanhToanSection, { buildThanhToanPayload } from "../components/ThanhToanSection";
+import { printHoaDonBan } from "../utils/print";
 import { getHoaDon, createHoaDon, updateHoaDon, huyHoaDon } from "../api/hoaDon";
 import { getLoaiVang } from "../api/cauHinh";
 import dayjs from "dayjs";
@@ -45,6 +48,7 @@ export default function BanHang() {
   const [gioHang, setGioHang] = useState([]);
   const [chieuKhau, setChieuKhau] = useState(0);
   const [hinhThuc, setHinhThuc] = useState("TIEN_MAT");
+  const [soTienCK, setSoTienCK] = useState(0);
   const [ghiChu, setGhiChu] = useState("");
   const [loading, setLoading] = useState(false);
   const [modalKH, setModalKH] = useState(false);
@@ -128,7 +132,8 @@ export default function BanHang() {
     if (gioHang.length === 0) return message.warning("Giỏ hàng trống!");
     setLoading(true);
     try {
-      await createHoaDon({
+      const payload = buildThanhToanPayload({ hinhThuc, soTienCK, tongTien: tongThanhToan, ghiChu });
+      const res = await createHoaDon({
         khachHangId: khachHang?.id || null,
         chiTietHoaDon: gioHang.map((i) => ({
           sanPhamId: i.sanPhamId,
@@ -139,14 +144,28 @@ export default function BanHang() {
           thanhTien: i.thanhTien,
         })),
         chieuKhauPhanTram: chieuKhau,
-        hinhThucThanhToan: hinhThuc,
-        ghiChu,
+        hinhThucThanhToan: payload.hinhThucThanhToan,
+        ghiChu: payload.ghiChu,
       });
       message.success("Tạo hóa đơn thành công!");
+      printHoaDonBan({
+        maHD: res.data?.maHd || "HĐ mới",
+        khachHang,
+        items: gioHang,
+        tongTien,
+        giamGia,
+        tongThanhToan,
+        hinhThuc,
+        soTienCK,
+        ghiChu: payload.ghiChu,
+        ngay: res.data?.taoLuc,
+      });
       setGioHang([]);
       setKhachHang(null);
       setChieuKhau(0);
       setGhiChu("");
+      setHinhThuc("TIEN_MAT");
+      setSoTienCK(0);
       fetchHoaDons();
     } catch (e) {
       message.error(e.response?.data?.error || "Lỗi tạo hóa đơn");
@@ -384,22 +403,46 @@ export default function BanHang() {
       ),
     },
     {
-      title: "", key: "action", width: 120,
-      render: (_, r) => r.trangThai === "DA_HUY" ? null : (
+      title: "", key: "action", width: 155,
+      render: (_, r) => (
         <div style={{ display: "flex", gap: 4 }}>
-          <Button size="small" icon={<EditOutlined />} onClick={() => moModalSua(r)}>
-            Sửa
-          </Button>
-          <Popconfirm
-            title="Hủy hóa đơn này?"
-            description="Hàng sẽ được trả về kho và số dư sẽ được điều chỉnh."
-            onConfirm={() => handleHuy(r.id)}
-            okText="Xác nhận hủy"
-            cancelText="Không"
-            okButtonProps={{ danger: true }}
+          <Button
+            size="small"
+            icon={<PrinterOutlined />}
+            onClick={() =>
+              printHoaDonBan({
+                maHD: r.maHd,
+                khachHang: r.khachHang,
+                items: r.chiTietHoaDon || [],
+                tongTien: r.tongTien,
+                giamGia: r.tongTien - r.tongSauChieuKhau,
+                tongThanhToan: r.tongSauChieuKhau,
+                hinhThuc: r.hinhThucThanhToan,
+                soTienCK: 0,
+                ghiChu: r.ghiChu,
+                ngay: r.taoLuc,
+              })
+            }
           >
-            <Button size="small" danger>Hủy</Button>
-          </Popconfirm>
+            In
+          </Button>
+          {r.trangThai !== "DA_HUY" && (
+            <>
+              <Button size="small" icon={<EditOutlined />} onClick={() => moModalSua(r)}>
+                Sửa
+              </Button>
+              <Popconfirm
+                title="Hủy hóa đơn này?"
+                description="Hàng sẽ được trả về kho và số dư sẽ được điều chỉnh."
+                onConfirm={() => handleHuy(r.id)}
+                okText="Xác nhận hủy"
+                cancelText="Không"
+                okButtonProps={{ danger: true }}
+              >
+                <Button size="small" danger>Hủy</Button>
+              </Popconfirm>
+            </>
+          )}
         </div>
       ),
     },
@@ -483,12 +526,13 @@ export default function BanHang() {
               </div>
             </Card>
 
-            <Card title="Hình thức thanh toán" size="small">
-              <Select value={hinhThuc} onChange={setHinhThuc} style={{ width: "100%" }}>
-                <Option value="TIEN_MAT">💵 Tiền mặt</Option>
-                <Option value="CHUYEN_KHOAN">🏦 Chuyển khoản</Option>
-              </Select>
-            </Card>
+            <ThanhToanSection
+              hinhThuc={hinhThuc}
+              onHinhThuc={setHinhThuc}
+              soTienCK={soTienCK}
+              onSoTienCK={setSoTienCK}
+              tongTien={tongThanhToan}
+            />
 
             {khachHang && (
               <Card title="Tích điểm" size="small">
@@ -507,7 +551,7 @@ export default function BanHang() {
             )}
 
             <div style={{ display: "flex", gap: 8 }}>
-              <Button style={{ flex: 1 }} onClick={() => { setGioHang([]); setKhachHang(null); setChieuKhau(0); }}>Hủy</Button>
+              <Button style={{ flex: 1 }} onClick={() => { setGioHang([]); setKhachHang(null); setChieuKhau(0); setHinhThuc("TIEN_MAT"); setSoTienCK(0); }}>Hủy</Button>
               <Button type="primary" style={{ flex: 2 }} loading={loading} onClick={xacNhanHoaDon} disabled={gioHang.length === 0}>
                 Xác nhận & Lưu
               </Button>
