@@ -211,13 +211,9 @@ export default function Dashboard() {
       key: "loai",
       render: (v) =>
         v === "DICH_VU" ? (
-          <Tag color="purple" style={{ fontSize: 10 }}>
-            Dịch vụ
-          </Tag>
+          <Tag color="purple" style={{ fontSize: 10 }}>Dịch vụ</Tag>
         ) : (
-          <Tag color="gold" style={{ fontSize: 10 }}>
-            Bán hàng
-          </Tag>
+          <Tag color="gold" style={{ fontSize: 10 }}>Bán hàng</Tag>
         ),
     },
     {
